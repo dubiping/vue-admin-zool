@@ -1,3 +1,3 @@
-import setting from './setting.config'
+const setting = require('./setting.config')
 
-export default Object.assign({}, setting)
+module.exports = Object.assign({}, setting)
