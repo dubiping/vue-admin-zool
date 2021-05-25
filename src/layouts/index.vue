@@ -5,6 +5,7 @@
       class="mask"
       @click="handleFoldSideBar"
     />
+    <side-bar />
     <div class="main-container"></div>
   </div>
 </template>
@@ -25,26 +26,26 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
- @import "~@/styles/mixin.scss";
- @import "~@/styles/variables.scss";
-  .vue-admin-zool-wrapper {
-    @include clearfix;
-    position: relative;
-    width: 100%;
-    height: 100%;
+@import "~@/styles/mixin.scss";
+@import "~@/styles/variables.scss";
+.vue-admin-zool-wrapper {
+  @include clearfix;
+  position: relative;
+  width: 100%;
+  height: 100%;
 
-    .mask {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: $base-z-index - 1;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      background: #000;
-      opacity: 0.5;
-    }
+  .mask {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $base-z-index - 1;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+    opacity: 0.5;
   }
+}
 </style>

@@ -3,8 +3,20 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
+/**
+ * hidden: true       如果为true，侧边栏不显示
+ * alwaysShow: true   如果设置为true，侧边栏会一直显示根菜单
+ *                    如果设置为false，超过1个children才显示
+ * meta : {
+  icon:
+  title:
+  badge: ''             标识
+  target: '_blank'      设置_blank，打开新窗口
+ }
+ */
+
 /* Layout */
-import Layout from '@/layout'
+import Layout from '@/layouts'
 export const constantRoutes = [
   {
     path: '/',

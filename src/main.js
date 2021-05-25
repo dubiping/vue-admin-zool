@@ -14,6 +14,9 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import './plugins'
+import '@/layouts/export'
+
 // import './icons' // icon
 // import './permission' // permission control
 // import './utils/error-log' // error log

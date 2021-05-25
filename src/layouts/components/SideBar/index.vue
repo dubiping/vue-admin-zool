@@ -10,9 +10,7 @@
       :default-openeds="defaultOpens"
       :unique-opened="uniqueOpened"
       mode="vertical"
-    >
-
-    </el-menu>
+    />
   </el-scrollbar>
 </template>
 <script>
@@ -46,7 +44,7 @@ export default {
     },
     variables() {
       return variables
-    },
+    }
   }
 }
 </script>

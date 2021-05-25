@@ -1,2 +1,7 @@
-@import './variables.scss';
+// @import './variables.scss';
 @import './mixin.scss';
+$base: '.vab';
+
+img {
+  object-fit: cover;
+}
