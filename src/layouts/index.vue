@@ -6,7 +6,9 @@
       @click="handleFoldSideBar"
     />
     <side-bar />
-    <div class="main-container"></div>
+    <div class="main-container">
+      <app-main />
+    </div>
   </div>
 </template>
 <script>

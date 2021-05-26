@@ -45,6 +45,9 @@ import '@/layouts/export'
 // Object.keys(filters).forEach(key => {
 //   Vue.filter(key, filters[key])
 // })
+import AudioRecorder from 'vue-audio-recorder'
+ 
+Vue.use(AudioRecorder)
 
 Vue.config.productionTip = false
 
