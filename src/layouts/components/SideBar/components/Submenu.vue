@@ -7,11 +7,12 @@
     <template slot="title">
       <i 
         v-if="isElIcon(routeChildren.meta.icon)"
-        :class="[routeChildren.meta.icon, 'sub-el-icon']"
+        :class="[routeChildren.meta.icon, 'sub-el-icon remix-icon']"
       />
       <svg-icon
         v-else-if="routeChildren.meta.icon"
         :icon-class="routeChildren.meta.icon"
+        class="remix-icon"
       />
       <span>{{ item.meta.title }}</span>
     </template>

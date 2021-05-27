@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar class="side-bar-container">
+  <el-scrollbar class="side-bar-container" :class="{ 'is-collapse': collapse }">
     <el-menu
       :background-color="variables.menuBackground"
       :text-color="variables.menuColor"
@@ -49,5 +49,90 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@mixin active {
+  &:hover {
+    color: $base-color-white;
+    background-color: $base-menu-background-active !important;
+  }
 
+  &.is-active {
+    color: $base-color-white;
+    background-color: $base-menu-background-active !important;
+  }
+}
+
+.side-bar-container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $base-z-index;
+  width: $base-left-menu-width;
+  height: 100vh;
+  overflow: hidden;
+  background: $base-menu-background;
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+  transition: width $base-transition-time;
+
+  &.is-collapse {
+    width: $base-left-menu-width-min;
+    border-right: 0;
+
+    ::v-deep {
+      .el-menu {
+        transition: width $base-transition-time;
+      }
+
+      .el-menu--collapse {
+        border-right: 0;
+
+        .el-submenu__icon-arrow {
+          right: 10px;
+          margin-top: -3px;
+        }
+      }
+    }
+  }
+
+  ::v-deep {
+    .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+
+    .el-scrollbar__view {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      @media (min-width: 768px) {
+        padding-bottom: 15px;
+      }
+    }
+
+    .el-menu {
+      border: 0;
+      flex-grow: 1;
+
+      .remix-icon {
+        padding-right: 3px;
+        font-size: $base-font-size-default + 2;
+      }
+    }
+
+    .el-menu-item,
+    .el-submenu__title {
+      height: $base-menu-item-height;
+      overflow: hidden;
+      line-height: $base-menu-item-height;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .el-menu-item {
+      @include active;
+    }
+  }
+}
 </style>

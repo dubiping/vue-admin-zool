@@ -2,11 +2,12 @@
   <el-menu-item :index="handlePath(routeChildren.path)" @click="handleLink">
     <i
       v-if="isElIcon(routeChildren.meta.icon)"
-      :class="[routeChildren.meta.icon, 'sub-el-icon']"
+      :class="[routeChildren.meta.icon, 'sub-el-icon remix-icon']"
     />
     <svg-icon
       v-else-if="routeChildren.meta.icon"
       :icon-class="routeChildren.meta.icon"
+      class="remix-icon"
     />
     <span>{{ routeChildren.meta.title }}</span>
     <el-tag

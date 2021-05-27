@@ -5,8 +5,13 @@
       class="mask"
       @click="handleFoldSideBar"
     />
-    <side-bar />
-    <div class="main-container">
+    <div class="zool-layout-header" :class="header === 'fixed' ? 'fixed-header' : ''">
+      <side-bar />
+      <div class="zool-main">
+        <tabs-bar />
+      </div>
+    </div>
+    <div class="zool-main" :class="collapse ? 'is-collapse-main' : ''">
       <app-main />
     </div>
   </div>
@@ -17,7 +22,8 @@ export default {
   name: 'Layout',
   computed: {
     ...mapGetters([
-      'device'
+      'device',
+      'collapse'
     ])
   },
   methods: {
@@ -29,7 +35,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-@import "~@/styles/variables.scss";
 .vue-admin-zool-wrapper {
   @include clearfix;
   position: relative;
@@ -48,6 +53,22 @@ export default {
     overflow: hidden;
     background: #000;
     opacity: 0.5;
+  }
+  .zool-main {
+    position: relative;
+    min-height: 100%;
+    margin-left: $base-left-menu-width;
+    background: #f6f8f9;
+    transition: $base-transition;
+    .zool-app-main {
+      width: calc(100% - #{$base-padding} - #{$base-padding});
+      padding: $base-padding;
+      background: $base-color-white;
+      border-radius: $base-border-radius;
+    }
+  }
+  &.is-collapse-main {
+    margin-left: $base-left-menu-width-min;
   }
 }
 </style>

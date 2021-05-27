@@ -1,5 +1,5 @@
 const getters = {
-  callapse: state => state.settings.callapse,
+  collapse: state => state.settings.collapse,
   device: state => state.settings.device,
   visitedRoutes: (state) => state.tabsBar.visitedRoutes
 }

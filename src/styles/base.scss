@@ -1,0 +1,56 @@
+@import './mixin.scss';
+html body,
+html body[class*=zool-theme-] {
+  position: relative;
+  box-sizing: border-box;
+  height: 100vh;
+  padding: 0;
+  overflow: hidden;
+  font-family: PingFang SC, Arial, Microsoft YaHei, sans-serif;
+  font-size: $base-font-size-default;
+  color: #515a6e;
+  background: #f6f8f9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @include base-scrollbar;
+
+  div {
+    @include base-scrollbar;
+  }
+
+  img {
+    object-fit: cover;
+  }
+
+  img:not([src]),
+  img[src=""] {
+    opacity: 0;
+  }
+
+  a {
+    color: $base-color-blue;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  svg,
+  i {
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  #app {
+    height: 100vh;
+    overflow: auto;
+    .zool-main {
+      transition: $base-transition;
+      .zool-app-main {
+        background: #fff;
+        transition: $base-transition;
+        overflow: hidden;
+      }
+    }
+  }
+}

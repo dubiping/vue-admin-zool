@@ -1,11 +1,11 @@
 <template>
-  <div v-if="routerView" class="app-main-container">
+  <section v-if="routerView" class="zool-app-main">
     <transition mode="out-in" name="fade-transform">
       <keep-alive :include="cachedRoutes" :max="keepAliveMaxNum">
         <router-view :key="key" class="app-main-height" />
       </keep-alive>
     </transition>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -62,7 +62,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.app-main-container {
+.zool-app-main {
   position: relative;
   width: 100%;
   overflow: hidden;
