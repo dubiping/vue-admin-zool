@@ -1,7 +1,7 @@
 <template>
   <div class="zool-tabs-bar">
     <span>
-      <svg-icon :icon-class="collapse ? 'menu-fold-line': 'zip'" />
+      <svg-icon :icon-class="!collapse ? 'menu-fold-line': 'menu-unfold-line'" />
     </span>
     <el-tabs
       v-model="tabActive"
