@@ -1,8 +1,17 @@
+import { header } from '@/config'
+
+const theme =
+  JSON.parse(localStorage.getItem('vue-admin-zool-theme')) || ''
+
 const state = () => ({
   device: 'desktop',
-  collapse: false
+  collapse: false,
+  header: theme.header || header
 })
 const mutations = {
+  changeHeader: (state, header) => {
+    if (header) state.header = header
+  },
   changeCollapse: (state) => {
     state.collapse = !state.collapse
   },
@@ -17,6 +26,9 @@ const mutations = {
   }
 }
 const actions = {
+  changeHeader({ commit }, header) {
+    commit('changeHeader', header)
+  },
   changeCollapse({ commit }) {
     commit('changeCollapse')
   },

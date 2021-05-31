@@ -23,7 +23,8 @@ export default {
   computed: {
     ...mapGetters([
       'device',
-      'collapse'
+      'collapse',
+      'header'
     ])
   },
   methods: {

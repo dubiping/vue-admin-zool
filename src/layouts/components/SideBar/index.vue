@@ -10,7 +10,15 @@
       :default-openeds="defaultOpens"
       :unique-opened="uniqueOpened"
       mode="vertical"
-    />
+    >
+      <template v-for="route in routes">
+        <side-bar-item
+          :key="route.path"
+          :full-path="route.path"
+          :item="route"
+        />
+      </template>
+    </el-menu>
   </el-scrollbar>
 </template>
 <script>
@@ -26,7 +34,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'permission_routes',
+      'routes',
       'collapse'
     ]),
     defaultOpens() {
@@ -98,22 +106,8 @@ export default {
     .el-scrollbar__wrap {
       overflow-x: hidden;
     }
-
-    .el-scrollbar__view {
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-sizing: border-box;
-      @media (min-width: 768px) {
-        padding-bottom: 15px;
-      }
-    }
-
     .el-menu {
       border: 0;
-      flex-grow: 1;
-
       .remix-icon {
         padding-right: 3px;
         font-size: $base-font-size-default + 2;

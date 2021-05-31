@@ -3,12 +3,18 @@ const bodyParser = require('body-parser')
 const chalk = require('chalk')
 const path = require('path')
 const Mock = require('mockjs')
+const { handleMockArray } = require('./utils')
 
 const mockDir = path.join(process.cwd(), 'mock')
 
 function registerRoutes(app) {
   let mockLastIndex
-  const { mocks } = require('./index.js')
+  const mocks = []
+  const mockArray = handleMockArray()
+  mockArray.forEach((item) => {
+    const obj = require(item)
+    mocks.push(...obj)
+  })
   const mocksForServer = mocks.map(route => {
     return responseFake(route.url, route.type, route.response)
   })

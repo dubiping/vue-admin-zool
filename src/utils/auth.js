@@ -1,15 +1,22 @@
-import Cookies from 'js-cookie'
-
-const TokenKey = 'Zool-Token'
+import { storage, tokenKey } from '@/config'
 
 export function getToken() {
-  return Cookies.get(TokenKey)
+  if (storage === 'sessionStorage') {
+    return sessionStorage.getItem(tokenKey)
+  }
+  return localStorage.getItem(tokenKey)
 }
 
 export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+  if (storage === 'sessionStorage') {
+    return sessionStorage.setItem(tokenKey, token)
+  }
+  return localStorage.setItem(tokenKey, token)
 }
 
 export function removeToken() {
-  return Cookies.remove(TokenKey)
+  if (storage === 'sessionStorage') {
+    return sessionStorage.clear()
+  }
+  localStorage.removeItem(tokenKey)
 }

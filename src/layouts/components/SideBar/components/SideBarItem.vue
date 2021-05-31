@@ -7,7 +7,7 @@
     :route-children="routeChildren"
   >
     <template v-if="item.children && item.children.length">
-      <vab-side-bar-item
+      <side-bar-item
         v-for="route in item.children"
         :key="route.path"
         :full-path="handlePath(route.path)"

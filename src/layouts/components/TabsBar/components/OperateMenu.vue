@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown-menu slot="dropdown" class="tabs-more">
+  <el-dropdown-menu class="tabs-more">
       <el-dropdown-item command="closeOtherstabs">
         关闭其他
       </el-dropdown-item>

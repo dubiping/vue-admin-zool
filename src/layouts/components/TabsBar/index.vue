@@ -6,7 +6,7 @@
     <el-tabs
       v-model="tabActive"
       type="card"
-      class="tabs-content"
+      class="tabs-content zool-tabs-content-smart"
       @tab-click="handleTabClick"
       @tab-remove="handleTabRemove"
     >
@@ -16,7 +16,7 @@
         :label="item.meta.title"
         :name="item.path"
         :closable="!isAffix(item)"
-      ></el-tab-pane>
+      />
     </el-tabs>
     <el-dropdown>
       <span class="zool-tabs-more">
@@ -25,12 +25,13 @@
           <i class="box box-b" />
         </span>
       </span>
-      <operate-menu />
+      <operate-menu slot="dropdown" />
     </el-dropdown>
-    <operate-menu />
+    <!-- <operate-menu /> -->
   </div>
 </template>
 <script>
+import path from 'path'
 import { mapGetters } from 'vuex'
 export default {
   name: 'TabsBar',
@@ -43,8 +44,169 @@ export default {
   computed: {
     ...mapGetters([
       'visitedRoutes',
-      'collapse'
+      'collapse',
+      'routes'
     ])
+  },
+  watch: {
+    $route: {
+      handler(route) {
+        this.inittabs()
+        this.addtabs()
+        let tabActive = ''
+        this.visitedRoutes.forEach((item, index) => {
+          if (item.path === this.$route.path) {
+            tabActive = item.path
+          }
+        })
+        this.tabActive = tabActive
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    async handleTabRemove(tabActive) {
+      let view
+      this.visitedRoutes.forEach((item, index) => {
+        if (tabActive === item.path) {
+          view = item
+        }
+      })
+      const { visitedRoutes } = await this.$store.dispatch(
+        'tabsBar/delRoute',
+        view
+      )
+      if (this.isActive(view)) {
+        this.toLastTag(visitedRoutes, view)
+      }
+    },
+    handleTabClick(tab) {
+      const route = this.visitedRoutes.filter((item, index) => {
+        if (tab.index === index) return item
+      })[0]
+      if (this.$route.path !== route.path) {
+        this.$router.push({
+          path: route.path,
+          query: route.query,
+          fullPath: route.fullPath
+        })
+      } else {
+        return false
+      }
+    },
+    isActive(route) {
+      return route.path === this.$route.path
+    },
+    isAffix(tag) {
+      return tag.meta && tag.meta.affix
+    },
+    // 过滤不需要关闭的tab
+    filterAffixtabs(routes, basePath = '/') {
+      let tabs = []
+      routes.forEach((route) => {
+        if (route.meta && route.meta.affix) {
+          const tagPath = path.resolve(basePath, route.path)
+          tabs.push({
+            fullPath: tagPath,
+            path: tagPath,
+            name: route.name,
+            meta: { ...route.meta }
+          })
+        }
+        if (route.children) {
+          const temptabs = this.filterAffixtabs(route.children, route.path)
+          if (temptabs.length >= 1) {
+            tabs = [...tabs, ...temptabs]
+          }
+        }
+      })
+      return tabs
+    },
+    inittabs() {
+      const affixtabs = (this.affixtabs = this.filterAffixtabs(this.routes))
+      for (const tag of affixtabs) {
+        if (tag.name) {
+          this.$store.dispatch('tabsBar/addVisitedRoute', tag)
+        }
+      }
+    },
+    addtabs() {
+      const { name } = this.$route
+      if (name) {
+        this.$store.dispatch('tabsBar/addVisitedRoute', this.$route)
+      }
+      return false
+    },
+    handleCommand(command) {
+      switch (command) {
+        case 'refreshRoute':
+          this.refreshRoute()
+          break
+        case 'closeOtherstabs':
+          this.closeOtherstabs()
+          break
+        case 'closeLefttabs':
+          this.closeLefttabs()
+          break
+        case 'closeRighttabs':
+          this.closeRighttabs()
+          break
+        case 'closeAlltabs':
+          this.closeAlltabs()
+          break
+      }
+    },
+    async refreshRoute() {
+      this.$baseEventBus.$emit('reloadrouter-view')
+    },
+    async closeSelectedTag(view) {
+      const { visitedRoutes } = await this.$store.dispatch(
+        'tabsBar/delRoute',
+        view
+      )
+      if (this.isActive(view)) {
+        this.toLastTag(visitedRoutes, view)
+      }
+    },
+    async closeOtherstabs() {
+      const view = await this.toThisTag()
+      await this.$store.dispatch('tabsBar/delOthersRoutes', view)
+    },
+    async closeLefttabs() {
+      const view = await this.toThisTag()
+      await this.$store.dispatch('tabsBar/delLeftRoutes', view)
+    },
+    async closeRighttabs() {
+      const view = await this.toThisTag()
+      await this.$store.dispatch('tabsBar/delRightRoutes', view)
+    },
+    async closeAlltabs() {
+      const view = await this.toThisTag()
+      const { visitedRoutes } = await this.$store.dispatch(
+        'tabsBar/delAllRoutes'
+      )
+      if (this.affixtabs.some((tag) => tag.path === view.path)) {
+        return
+      }
+      this.toLastTag(visitedRoutes, view)
+    },
+    toLastTag(visitedRoutes, view) {
+      const latestView = visitedRoutes.slice(-1)[0]
+      if (latestView) {
+        this.$router.push(latestView)
+      } else {
+        this.$router.push('/')
+      }
+    },
+    async toThisTag() {
+      const view = this.visitedRoutes.filter((item, index) => {
+        if (item.path === this.$route.fullPath) {
+          return item
+        }
+      })[0]
+      if (this.$route.path !== view.path) this.$router.push(view)
+      return view
+    }
   }
 }
 </script>
@@ -65,6 +227,11 @@ export default {
   .tabs-content {
     width: calc(100% - 90px);
     height: $base-tag-item-height;
+    ::v-deep {
+      .el-tabs__header {
+        border-bottom: 0;
+      }
+    }
   }
   .zool-tabs-more {
     position: relative;

@@ -44,11 +44,6 @@ export default {
       default: ''
     }
   },
-  computed: {
-    isElIcon(icon) {
-      return (icon + '').includes('el-icon')
-    }
-  },
   methods: {
     handlePath(routePath) {
       if (isExternal(routePath)) {
@@ -87,6 +82,9 @@ export default {
           this.$router.push(path.resolve(this.fullPath, routePath))
         }
       }
+    },
+    isElIcon(icon) {
+      return (icon + '').includes('el-icon')
     }
   }
 }

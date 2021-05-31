@@ -1,3 +1,7 @@
+const { Random } = require('mockjs')
+const { join } = require('path')
+const fs = require('fs')
+
 /**
  * @param {string} url
  * @returns {Object}
@@ -42,7 +46,38 @@ function deepClone(source) {
   return targetObj
 }
 
+function handleMockArray() {
+  const mockArray = []
+  const getFiles = (jsonPath) => {
+    const jsonFiles = []
+    const findJsonFile = (path) => {
+      const files = fs.readdirSync(path)
+      files.forEach((item) => {
+        const fPath = join(path, item)
+        const stat = fs.statSync(fPath)
+        if (stat.isDirectory() === true) findJsonFile(item)
+        if (stat.isFile() === true) jsonFiles.push(item)
+      })
+    }
+    findJsonFile(jsonPath)
+    jsonFiles.forEach((item) => mockArray.push(`./controller/${item}`))
+  }
+  getFiles('mock/controller')
+  return mockArray
+}
+/**
+ * @description 随机生成图片url
+ * @param width
+ * @param height
+ * @returns {string}
+ */
+function handleRandomImage(width = 50, height = 50) {
+  return `https://picsum.photos/${width}/${height}?random=${Random.guid()}`
+}
+
 module.exports = {
   param2Obj,
-  deepClone
+  deepClone,
+  handleMockArray,
+  handleRandomImage
 }

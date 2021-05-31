@@ -1,4 +1,4 @@
-import { title } from '@/settings'
+import { title } from '@/config'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

@@ -11,8 +11,6 @@ import router from './router'
 import './plugins'
 import '@/layouts/export'
 
-// import './icons' // icon
-// import './permission' // permission control
 // import './utils/error-log' // error log
 
 // import * as filters from './filters' // global filters
@@ -25,17 +23,17 @@ import '@/layouts/export'
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
-// if (process.env.NODE_ENV === 'production') {
-//   const { mockXHR } = require('../mock')
-//   mockXHR()
-// }
+if (process.env.NODE_ENV === 'production') {
+  const { mockXHR } = require('../mock')
+  mockXHR()
+}
 
 // register global utility filters
 // Object.keys(filters).forEach(key => {
 //   Vue.filter(key, filters[key])
 // })
 import AudioRecorder from 'vue-audio-recorder'
- 
+
 Vue.use(AudioRecorder)
 
 Vue.config.productionTip = false

@@ -44,11 +44,6 @@ export default {
       default: '',
     },
   },
-  computed: {
-    isElIcon(icon) {
-      return (icon + '').includes('el-icon')
-    }
-  },
   methods: {
     handlePath(routePath) {
       if (isExternal(routePath)) {
@@ -59,7 +54,10 @@ export default {
       }
       return path.resolve(this.fullPath, routePath)
     },
-  },
+    isElIcon(icon) {
+      return (icon + '').includes('el-icon')
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
