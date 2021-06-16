@@ -26,12 +26,12 @@ export default {
   props: {
     item: {
       type: Object,
-      required: true,
+      required: true
     },
     fullPath: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
   data() {
     this.onlyOneChild = null
@@ -49,7 +49,7 @@ export default {
       } else {
         return 'Submenu'
       }
-    },
+    }
   },
   methods: {
     handleChildren(children = [], parent) {
@@ -70,7 +70,7 @@ export default {
         this.routeChildren = {
           ...parent,
           path: '',
-          notShowChildren: true,
+          notShowChildren: true
         }
         return true
       }
@@ -84,8 +84,8 @@ export default {
         return this.fullPath
       }
       return path.resolve(this.fullPath, routePath)
-    },
-  },
+    }
+  }
 }
 </script>
 

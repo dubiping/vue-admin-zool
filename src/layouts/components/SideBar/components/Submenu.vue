@@ -5,7 +5,7 @@
     :popper-append-to-body="false"
   >
     <template slot="title">
-      <i 
+      <i
         v-if="isElIcon(routeChildren.meta.icon)"
         :class="[routeChildren.meta.icon, 'sub-el-icon remix-icon']"
       />
@@ -31,18 +31,18 @@ export default {
       type: Object,
       default() {
         return null
-      },
+      }
     },
     item: {
       type: Object,
       default() {
         return null
-      },
+      }
     },
     fullPath: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
   methods: {
     handlePath(routePath) {

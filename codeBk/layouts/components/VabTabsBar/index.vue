@@ -13,7 +13,9 @@
         :label="item.meta.title"
         :name="item.path"
         :closable="!isAffix(item)"
-      ></el-tab-pane>
+      >
+        
+      </el-tab-pane>
     </el-tabs>
 
     <el-dropdown @command="handleCommand">

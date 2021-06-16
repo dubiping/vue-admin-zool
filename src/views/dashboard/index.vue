@@ -1,6 +1,5 @@
 <template>
   <div>
-    11111111111111
     <!-- <audio-recorder
     upload-url="YOUR_API_URL"
     :attempts="3"
@@ -13,13 +12,17 @@
     :before-upload="callback"
     :successful-upload="callback"
     :failed-upload="callback"/> -->
+    <ChatEditor></ChatEditor>
   </div>
 </template>
 
 <script>
-
+import ChatEditor from '@/components/ChatEditor'
 export default {
   name: 'Dashboard',
+  components: {
+    ChatEditor
+  },
   props: {},
   data() {
     return {}

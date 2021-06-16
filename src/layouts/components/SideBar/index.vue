@@ -38,8 +38,6 @@ export default {
       'collapse'
     ]),
     defaultOpens() {
-      if (this.collapse) {
-      }
       return defaultOpeneds
     },
     activeMenu() {

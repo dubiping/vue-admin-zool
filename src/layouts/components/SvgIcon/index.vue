@@ -51,6 +51,7 @@ export default {
   height: 1.125em;
   overflow: hidden;
   fill: currentColor;
+  font-size: 16px;
 
   &:hover {
     opacity: 0.8;
@@ -61,5 +62,9 @@ export default {
   background-color: currentColor;
   mask-size: cover!important;
   display: inline-block;
+}
+
+.ri-icon {
+  vertical-align: -3.5px;
 }
 </style>

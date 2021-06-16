@@ -51,7 +51,7 @@ export const asyncRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'ri-home-2-line', affix: true }
       }
     ]
   },

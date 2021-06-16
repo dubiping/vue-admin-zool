@@ -51,7 +51,7 @@ router.beforeEach(async(to, from, next) => {
     } else {
       accessRoutes = await store.dispatch('permission/generateRoutes')
     }
-    console.log(accessRoutes)
+
     // 用户无权限时登出，防止接口重复调用
     if (!accessRoutes.length) {
       await store.dispatch('user/logout')
