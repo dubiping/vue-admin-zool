@@ -7,6 +7,84 @@ img {
   object-fit: cover;
 }
 
+@for $i from 0 through 20 {
+  .p-#{$i} {
+    padding: $i * 5px!important;
+  }
+  .pl-#{$i} {
+    padding-left: $i * 5px!important;
+  }
+  .pr-#{$i} {
+    padding-right: $i * 5px!important;
+  }
+  .pt-#{$i} {
+    padding-top: $i * 5px!important;
+  }
+  .p-b#{$i} {
+    padding-bottom: $i * 5px!important;
+  }
+  .ml-#{$i} {
+    margin-left: $i * 5px!important;
+  }
+  .mr-#{$i} {
+    margin-right: $i * 5px!important;
+  }
+  .mt-#{$i} {
+    margin-top: $i * 5px!important;
+  }
+  .mb-#{$i} {
+    margin-bottom: $i * 5px!important;
+  }
+}
+
+@for $i from 0 through 30 {
+  .wd-#{$i} {
+    width: $i * 20px!important;
+  }
+}
+
+@for $i from 0 to 5 {
+  .fs-#{12 + 2 * $i} {
+    font-size: (2 * $i) + 12px!important;
+  }
+}
+
+@for $i from 1 through 3 {
+  .ellipse-#{$i} {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $i;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+  }
+}
+
+.border-1 {
+  border: 1px solid #ececec;
+}
+
+.color-gray {
+  color: #8998ac;
+}
+
+.color-warning {
+  color: #ffb800;
+}
+
+.color-danger {
+  color: #ff5e68;
+}
+.color-primary {
+  color: var(--theme)!important;
+}
+.cursor-p {
+  cursor: pointer;
+}
+.text-right {
+  text-align: right;
+}
+
 .flex-row {
   display: flex;
   flex-direction: row;
@@ -35,6 +113,6 @@ img {
 .flex-wrap {
   flex-wrap: wrap;
 }
-.flex-col {
+.flex-col, .flex-1 {
   flex: 1;
 }

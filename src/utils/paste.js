@@ -68,108 +68,6 @@ export function handleImage(file, cb, maxsize = 200 * 1024) {
 
   reader.readAsDataURL(file)
 }
-/**
- * 检查图片是否插入
- * @param {*} selector 编辑器元素的选择器
- * @param {*} cb 回调函数
- */
-export function checkImageInContainer(selector, cb) {
-  const randomNum = Math.floor(1000 * Math.random()) + ''
-  const nodes = document.querySelectorAll(selector + '>img')
-  nodes.forEach(node => {
-    node.setAttribute(`paste-marked`, randomNum)
-  })
-  setTimeout(() => {
-    const imgNodes = document.querySelectorAll(selector + '>img')
-    const flag = imgNodes.some(node => {
-      if (node.getAttribute('paste-marked') === randomNum) {
-        cb && cb(node.getAttribute('src'))
-        node.parentNode.removeChild(node)
-        return true
-      }
-    })
-    if (!flag) cb && cb({
-      type: 'error',
-      message: 'Failed to get paste'
-    })
-  }, 1)
-}
-/**
- * 粘贴
- * @param {*} e paste事件
- * @param {*} selector 编辑框选择器
- * @returns
- */
-export function paste(e, selector = '.editor') {
-  if (!(e.clipboardData && e.clipboardData.items)) {
-    // 只有ie支持window.clipboardData
-    const clipboardData = e.clipboardData || window.clipboardData
-    if (!clipboardData && navigator.clipboard) {
-      return navigator.clipboard.readText().then(str => {
-        resolve({
-          type: 'text',
-          text: str
-        })
-      })
-    }
-    if (!clipboardData) {
-      return Promise.reject(new Error('浏览器不支持剪贴板粘贴'))
-    }
-    return new Promise((resolve, reject) => {
-      if (clipboardData.files && clipboardData.files.length) {
-        clipboardData.files.forEach(file => {
-          const URLObj = window.URL || window.webkitURL
-          const pasteFile = URLObj.createObjectURL(file)
-          handleImage(pasteFile, (res) => {
-            typeof res === 'object' ? reject(res) : resolve({
-              type: 'image',
-              url: res
-            })
-          })
-        })
-        return false
-      }
-
-      if (Array.prototype.indexOf.call(clipboardData.types, 'text/plain') !== -1 || clipboardData.getData('text/plain')) {
-        resolve({
-          type: 'text',
-          text: clipboardData.getData('text/plain') || ''
-        })
-        return false
-      }
-      checkImageInContainer(selector, src => {
-        handleImage(src, res => {
-          typeof res === 'object' ? reject(res) : resolve({
-            type: 'image',
-            url: res
-          })
-        })
-      })
-    })
-  }
-  return new Promise((resolve, reject) => {
-    e.clipboardData.items.forEach(item => {
-      if (item.kind === 'string') {
-        item.getAsString((str) => {
-          resolve({
-            type: 'text',
-            text: str
-          })
-        })
-      } else if (item.kind === 'file') {
-        const pasteFile = item.getAsFile()
-        handleImage(pasteFile, res => {
-          typeof res === 'object' ? reject(res) : resolve({
-            type: 'image',
-            url: res
-          })
-        })
-      } else {
-        reject(new Error('Not allow to paste this type!'))
-      }
-    })
-  })
-}
 
 /**
  * 渲染节点
@@ -216,38 +114,11 @@ export function renderHtml(res, disableReturn = false) {
     node.className = res.style + ' weui-icon_emotion-1'
     node.style.backgroundImage = `url(${res.source})`
     range.insertNode(node)
+  } else if (res.type === 'at') {
+    node = document.createElement('span')
+    node.innerText = res.text
+    node.style.cssText = '-webkit-user-modify: read-only;user-modify: read-only'
+    range.insertNode(node)
   }
   return node
-}
-/**
- * 获取光标位置
- * @param {DOMElement} element 输入框的dom节点
- * @return {Number} 光标位置
- */
-export function getCursorPosition(element) {
-  let caretOffset = 0
-  const doc = element.ownerDocument || element.document
-  const win = doc.defaultView || doc.parentWindow
-  const sel = win.getSelection()
-  if (sel.rangeCount > 0) {
-    const range = win.getSelection().getRangeAt(0)
-    const preCaretRange = range.cloneRange()
-    preCaretRange.selectNodeContents(element)
-    preCaretRange.setEnd(range.endContainer, range.endOffset)
-    caretOffset = preCaretRange.toString().length
-  }
-  return caretOffset
-}
-/**
- * 设置光标位置
- * @param {DOMElement} element 输入框的dom节点
- * @param {Number} cursorPosition 光标位置的值
- */
-export function setCursorPosition(element, cursorPosition) {
-  const range = document.createRange()
-  range.setStart(element.firstChild, cursorPosition)
-  range.setEnd(element.firstChild, cursorPosition)
-  const sel = window.getSelection()
-  sel.removeAllRanges()
-  sel.addRange(range)
 }

@@ -1,6 +1,7 @@
 export default class Selection {
-  constructor() {
+  constructor(elem) {
     this.currentRange = null
+    this.editor = elem
   }
   getRange() {
     return this.currentRange
@@ -22,6 +23,32 @@ export default class Selection {
     const range = this.currentRange
     range.setStartAfter(elem)
     range.collapse(true)
+  }
+  keepLastIndex(elem) {
+    console.log('1111')
+    if (window.getSelection) {
+      elem.focus()
+      const selection = window.getSelection()
+      selection.selectAllChildren(elem)
+      selection.collapseToEnd()
+    } else if (document.selection) {
+      const range = document.selection.createRange()
+      range.moveToElementText(elem)
+      range.collapse(false)
+      range.select()
+    }
+    this.saveRange()
+  }
+  // 恢复选区
+  restoreSelection() {
+    if (!this.currentRange) return this.keepLastIndex(this.editor)
+
+    const selection = window.getSelection ? window.getSelection() : (document.selection ? document.selection.createRange() : null)
+
+    if (!selection) return false
+
+    selection.removeAllRanges()
+    selection.addRange(this.currentRange)
   }
   // 折叠选区
   collapseRange(toStart) {
@@ -79,12 +106,6 @@ export default class Selection {
       }
     }
     return false
-  }
-  // 恢复选区
-  restoreSelection() {
-    const selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(this.currentRange)
   }
   createRangeByElem(elem, toStart, isContent) {
     if (!elem) return
