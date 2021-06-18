@@ -1,11 +1,9 @@
+@import './reset.scss';
 @import './base.scss';
 @import './mixin.scss';
 @import './emoji.scss';
-$base: '.vab';
-
-img {
-  object-fit: cover;
-}
+@import './element.scss';
+$base: '.zool';
 
 @for $i from 0 through 20 {
   .p-#{$i} {

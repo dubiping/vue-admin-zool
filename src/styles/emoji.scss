@@ -682,8 +682,8 @@
 }
 .weui-icon_emotion {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 4px;
+  left: 4px;
   display: inline-block;
   transform-origin: 0 0;
   transform: scale(0.5);
@@ -696,7 +696,11 @@
   line-height: 32px;
   overflow: hidden;
 }
-.weui-icon_emotion-1 {
+.weui-icon_emoji {
+  position: absolute;
+  top: 2px;
+  left: 0px;
+  display: inline-block;
   transform-origin: 0 0;
   transform: scale(0.5);
 }

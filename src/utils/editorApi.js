@@ -50,6 +50,7 @@ export function compress(img, fileType, maxWidth) {
  * @param {number} [maxsize=200 * 1024] 图片最大体积
  */
 export function imageToBase64(file, maxsize = 200 * 1024) {
+  console.log('image', file)
   return new Promise((resolve, reject) => {
     if (!file || !/\/(?:jpeg|jpg|png)/i.test(file.type)) {
       return reject({
@@ -152,7 +153,7 @@ export function paste(e, selector = '.editor', isBase64 = true) {
         clipboardData.files.forEach(file => {
           const URLObj = window.URL || window.webkitURL
           const pasteFile = URLObj.createObjectURL(file)
-          isBase64 ? imageToBase64(pasteFile, (res) => {
+          isBase64 ? imageToBase64(pasteFile).then(res => {
             typeof res === 'object' ? reject(res) : resolve({
               type: 'image',
               url: res
@@ -173,7 +174,7 @@ export function paste(e, selector = '.editor', isBase64 = true) {
         return false
       }
       checkImageInContainer(selector, src => {
-        imageToBase64(src, res => {
+        imageToBase64(src).then(res => {
           typeof res === 'object' ? reject(res) : resolve({
             type: 'image',
             url: res
@@ -193,7 +194,7 @@ export function paste(e, selector = '.editor', isBase64 = true) {
         })
       } else if (item.kind === 'file') {
         const pasteFile = item.getAsFile()
-        isBase64 ? imageToBase64(pasteFile, res => {
+        isBase64 ? imageToBase64(pasteFile).then(res => {
           typeof res === 'object' ? reject(res) : resolve({
             type: 'image',
             url: res
@@ -366,16 +367,19 @@ export function insertHtml(res) {
     html = `<img class="img-upload-chat" src="${res.url}">`
   } else if (res.type === 'emoji') {
     html = `<div class="weui-emoji_item" contenteditable="false" style="-webkit-user-modify: read-only;user-modify: read-only;">
-      <img class="weui-icon_emotion ${res.style}" src="${defaultImage}" style="background-image: url(${res.source});">
-    </div>`
+      <img class="weui-icon_emoji ${res.style}" src="${defaultImage}" style="background-image: url(${res.source});">
+    </div>
+    <span style="min-width: 1px;min-height: 14px"></span>`
+    html = trimSpaceThan2(html)
   } else if (res.type === 'at') {
     html = `<span class="at-member" contenteditable="false" data-id="${res.id}" style="-webkit-user-modify: read-only;user-modify: read-only;">@${res.nickName} </span>
-      <span style="min-width: 1px;min-height: 14px"></span>`
+    <span style="min-width: 1px;min-height: 14px"></span>`
+    html = trimSpaceThan2(html)
   } else if (res.type === 'file') {
     html = `<div style="white-space: normal;">
       <div class="file-upload border-1 p-2" contenteditable="false">
         <div class="flex-row flex-row-center">
-          <span class="fa-file-icon mr ${res.icon}"></span>
+          <span class="fa-file-icon mr-2 ${res.icon}"></span>
           <div class="flex-1">
             <h3 class="fs-14 file-name ellipse-2">${res.fileName}</h3>
             <p>${res.size}</p>
@@ -385,20 +389,31 @@ export function insertHtml(res) {
       </div>
       <span style="word-break: break-word;min-width: 1px;min-height: 1px"></span>
     </div>`
+    html = trimSpaceThan2(html)
   }
   const elem = document.createElement('div')
   elem.innerHTML = html
   const frag = document.createDocumentFragment()
-  const el = elem.firstChild
-  frag.appendChild(el)
+  let el = null
+  let pre = null
+  while (el = elem.firstChild) {
+    pre = frag.appendChild(el)
+    console.log(pre)
+  }
   range.insertNode(frag)
 
-  setTimeout(() => {
-    const _range = range.cloneRange()
-    console.log(elem.children.length, el, html)
-    _range.setStartAfter(el)
-    _range.collapse(true)
-    selection.removeAllRanges()
-    selection.addRange(_range)
-  }, 0)
+  const _range = range.cloneRange()
+  console.log(elem.childNodes, pre)
+  _range.setStartAfter(pre)
+  _range.collapse(true)
+  selection.removeAllRanges()
+  selection.addRange(_range)
+}
+/**
+ * 剔除2个以上空格
+ * @param {*} str
+ * @returns
+ */
+export function trimSpaceThan2(str) {
+  return (str || '').replace(/[\r\n]/g, '').replace(/\s{2,}/g, '')
 }

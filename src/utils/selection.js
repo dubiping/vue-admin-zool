@@ -16,6 +16,12 @@ export default class Selection {
     if (selection.rangeCount === 0) {
       return
     }
+    // 表情使用了overflow: hidden，导致光标出现在编辑器外部
+    let lastNode = null
+    if ((lastNode = this.editor.lastChild) && lastNode.className === 'weui-emoji_item') {
+      this.createEmptyRange()
+      return
+    }
     const _range = selection.getRangeAt(0)
     this.currentRange = _range.cloneRange()
   }
@@ -25,7 +31,6 @@ export default class Selection {
     range.collapse(true)
   }
   keepLastIndex(elem) {
-    console.log('1111')
     if (window.getSelection) {
       elem.focus()
       const selection = window.getSelection()
@@ -122,5 +127,14 @@ export default class Selection {
 
     // 存储 range
     this.saveRange(range)
+  }
+  createEmptyRange() {
+    const range = this.currentRange
+    if (!range) return
+    const el = document.createElement('span')
+    el.style.cssText = 'word-break: break-word;min-width: 1px;min-height: 1px'
+    range.insertNode(el)
+    this.moveElemEnd(el)
+    this.restoreSelection()
   }
 }
