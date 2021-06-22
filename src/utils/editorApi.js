@@ -11,9 +11,9 @@ export function escape2Html(str) {
     amp: '&',
     quot: '"'
   }
-  return str.replace(/&(lt|gt|nbsp|amp|quot);/gi, (function (e, n) {
+  return str.replace(/&(lt|gt|nbsp|amp|quot);/gi, (e, n) => {
     return t[n]
-  }))
+  })
 }
 /**
  * 图片压缩函数
@@ -50,9 +50,8 @@ export function compress(img, fileType, maxWidth) {
  * @param {number} [maxsize=200 * 1024] 图片最大体积
  */
 export function imageToBase64(file, maxsize = 200 * 1024) {
-  console.log('image', file)
   return new Promise((resolve, reject) => {
-    if (!file || !/\/(?:jpeg|jpg|png)/i.test(file.type)) {
+    if (!file || !/\/(?:jpeg|jpg|png|gif)/i.test(file.type)) {
       return reject({
         type: 'error',
         message: 'file type is error'
@@ -60,7 +59,7 @@ export function imageToBase64(file, maxsize = 200 * 1024) {
     }
 
     const reader = new FileReader()
-    reader.onload = function () {
+    reader.onload = function() {
       const result = this.result
       let img = new Image()
       img.crossOrigin = 'anonymous'
@@ -70,13 +69,13 @@ export function imageToBase64(file, maxsize = 200 * 1024) {
         return
       }
 
-      img.onload = function () {
+      img.onload = function() {
         const compressedDataUrl = compress(img, file.type, maxsize / 1024)
         resolve(compressedDataUrl)
         img = null
       }
 
-      img.onerror = function () {
+      img.onerror = function() {
         reject({
           type: 'error',
           message: 'Failed to get image from: ' + result,
@@ -112,13 +111,14 @@ export function checkImageInContainer(selector, cb) {
         return true
       }
     })
-    if (!flag) cb && cb({
-      type: 'error',
-      message: 'Failed to get paste'
-    })
+    if (!flag) {
+      cb && cb({
+        type: 'error',
+        message: 'Failed to get paste'
+      })
+    }
   }, 1)
 }
-
 
 /**
  * 粘贴
@@ -139,7 +139,7 @@ export function paste(e, selector = '.editor', isBase64 = true) {
 
     if (!clipboardData && navigator.clipboard) {
       return navigator.clipboard.readText().then(str => {
-        resolve({
+        return ({
           type: 'text',
           text: str
         })
@@ -200,14 +200,76 @@ export function paste(e, selector = '.editor', isBase64 = true) {
             url: res
           })
         }) : resolve({
-          type: 'pasteFile',
-          url: res
+          type: 'image',
+          url: pasteFile
         })
       } else {
         reject(new Error('Not allow to paste this type!'))
       }
     })
   })
+}
+/**
+ * 拖拽
+ * @param {*} e
+ * @param {*} isBase64
+ * @returns
+ * {
+    type: 'image', // text | image | file
+    icon: 'image', // chat | image | folder
+    url: res, // base64路径
+    file:  // 二进制数据
+    fileName: item.name, // 文件名
+    fileType, // 文件类型
+    size: sizeUnit // 文件大小， 加上了单位
+  }
+ */
+export function drop(e, isBase64 = true) {
+  const list = []
+  // files里才可以获取文件名name
+  ;(e.dataTransfer.files || []).forEach(item => {
+    let fileType = item.name.substr(item.name.lastIndexOf('.') + 1)
+    const size = item.size / 1024 / 1024
+    const sizeUnit = size > 1 ? ''.concat(size.toFixed(2), 'M') : ''.concat((item.size / 1024).toFixed(2), 'KB')
+    const isImage = item.type.match('^image/')
+    const isFolder = !item.type // 是文件夹
+    fileType = isFolder ? 'folder' : fileTypeIcon(fileType)
+    // const pasteFile = item.getAsFile()
+    const event = isBase64 && isImage ? imageToBase64(item).then(res => {
+      return typeof res === 'object' ? res : {
+        type: 'image',
+        icon: 'image',
+        url: res,
+        fileName: item.name,
+        fileType,
+        size: sizeUnit
+      }
+    }) : Promise.resolve({
+      type: isImage ? 'image' : 'file',
+      icon: isImage ? 'image' : 'folder',
+      fileName: item.name,
+      fileType,
+      file: item,
+      size: sizeUnit
+    })
+    event && list.push(event)
+  })
+  ;(e.dataTransfer.items || []).forEach(item => {
+    let event
+    if (item.kind === 'string') {
+      event = new Promise(resolve => {
+        item.getAsString((str) => {
+          resolve({
+            type: 'text',
+            icon: 'chat',
+            text: str
+          })
+        })
+      })
+    }
+    event && list.push(event)
+  })
+  return Promise.all(list)
 }
 /**
  * 删除at内容
@@ -217,23 +279,23 @@ export function paste(e, selector = '.editor', isBase64 = true) {
 export function delAtHtml(str) {
   if (!str) return ''
   const reg = /data-id="([^"]*)"/g
-  return str.replace(/<span class="at-member"[^>]*>(.*?)<\/span>/gi, (function (e, n) {
+  return str.replace(/<span class="at-member"[^>]*>(.*?)<\/span>/gi, function(e, n) {
     let r = ''
-    e.replace(reg, (function (e, t) {
+    e.replace(reg, function(e, t) {
       r = t
-    }))
+    })
     return '@$' + r + '$'
-  }))
+  })
 }
 
 export function delAtHtmlIds(str) {
   if (!str) return ''
   const reg = /data-id="([^"]*)"/g
-  return str.replace(/<span class="at-member"[^>]*>(.*?)<\/span>/gi, (function (e, n) {
-    return e.replace(reg, (function (e, t) {
+  return str.replace(/<span class="at-member"[^>]*>(.*?)<\/span>/gi, function(e, n) {
+    return e.replace(reg, function(e, t) {
       return t
-    }))
-  }))
+    })
+  })
 }
 /**
  * 删除文件内容
@@ -258,20 +320,20 @@ export function delFileHtml(str) {
 export function returnFileContent(str) {
   if (!str) return []
   const list = []
-  str.replace(/<p class="file-content"[^>]*>([\s\S]*?)<\/p>/gi, (function (e, n) {
+  str.replace(/<p class="file-content"[^>]*>([\s\S]*?)<\/p>/gi, function(e, n) {
     list.push(JSON.parse(n))
     return n
-  }))
+  })
   return list
 }
 
 export function returnId(str) {
   if (!str) return []
   const list = []
-  str.replace(/data-id="([^"]*)"/g, (function (e, n) {
+  str.replace(/data-id="([^"]*)"/g, function(e, n) {
     list.push(n)
     return n
-  }))
+  })
   return list
 }
 /**
@@ -281,9 +343,9 @@ export function returnId(str) {
  */
 export function delStyleImg(str) {
   if (!str) return ''
-  return str.replace(/<img[^>]*>/gi, (function (e, t) {
+  return str.replace(/<img[^>]*>/gi, function(e, t) {
     return e.replace(/style\s*?=\s*?([‘"])[\s\S]*?\1/gi, '')
-  }))
+  })
 }
 
 /**
@@ -297,8 +359,8 @@ export function delAllTag(str) {
 }
 /**
  * 删除所有标签
- * @param {*} str 
- * @returns 
+ * @param {*} str
+ * @returns
  */
 export function delAllHtml(str) {
   if (!str) return ''
@@ -346,14 +408,14 @@ export function getInnerText(str) {
 export const defaultImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='
 
 /**
- * 
- * @param {*} res 
- * text: {type, text}, 
- * emoji: {type, source}, 
- * image: {type, url}, 
+ * 光标处插入html
+ * @param {*} res
+ * text: {type, text},
+ * emoji: {type, source},
+ * image: {type, url},
  * file: {type, fileName, size, icon}
  * at: {type, nickName, id}
- * @returns 
+ * @returns
  */
 export function insertHtml(res) {
   const selection = window.getSelection()
@@ -396,18 +458,30 @@ export function insertHtml(res) {
   const frag = document.createDocumentFragment()
   let el = null
   let pre = null
-  while (el = elem.firstChild) {
+  while ((el = elem.firstChild)) {
     pre = frag.appendChild(el)
-    console.log(pre)
   }
   range.insertNode(frag)
 
   const _range = range.cloneRange()
-  console.log(elem.childNodes, pre)
   _range.setStartAfter(pre)
   _range.collapse(true)
   selection.removeAllRanges()
   selection.addRange(_range)
+}
+/**
+ * 当编辑框连续两个元素是只读时，用空元素进行分割，防止同时删除
+ * @param {*} parentNode
+ */
+export function appendEmptyEle(parentNode) {
+  const nodes = parentNode.querySelectorAll('[contenteditable="false"]')
+  nodes.forEach(node => {
+    if (node.nextSibling && node.nextSibling.getAttribute('contenteditable') === 'false') {
+      const el = document.createElement('span')
+      el.style.cssText = 'word-break: break-word;min-width: 1px;min-height: 1px;'
+      parentNode.insertBefore(el, node.nextSibling)
+    }
+  })
 }
 /**
  * 剔除2个以上空格
@@ -416,4 +490,15 @@ export function insertHtml(res) {
  */
 export function trimSpaceThan2(str) {
   return (str || '').replace(/[\r\n]/g, '').replace(/\s{2,}/g, '')
+}
+/**
+ * 获取文件icon
+ * @param {*} fileType
+ * @returns
+ */
+export function fileTypeIcon(fileType) {
+  if (!fileType) return 'unknown'
+  fileType = fileType.trim().toLowerCase()
+  const map = ['doc', 'docx', 'dotx', 'dot', 'docm', 'dotm', 'xps', 'mht', 'mhtml', 'rtf', 'xml', 'odt', 'pdf', 'ppt', 'pptx', 'xls', 'xlsx', 'xlsb', 'xlsm', 'xlst', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'jpeg2000', 'mp4', 'avi', 'rm', 'rmvb', 'wmv', 'f4v', 'flv', 'mid', 'mpeg', 'mpg', 'dat']
+  return map.indexOf(fileType) === -1 ? 'unknown' : fileType
 }

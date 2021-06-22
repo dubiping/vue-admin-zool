@@ -52,5 +52,11 @@ html body[class*=zool-theme-] {
         overflow: hidden;
       }
     }
+
+    .zool-scroll_wrap {
+      margin-left: 0px!important;
+      overflow-x: hidden!important;
+      overflow-y: scroll!important;
+    }
   }
 }

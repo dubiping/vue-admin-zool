@@ -12,8 +12,9 @@
       </span>
       <el-button @click="handleAtMerber">@</el-button>
     </div>
-    <div class="editor"
+    <div
       ref="editor"
+      class="editor"
       :draggable="true"
       :placeholder="placeholder"
       contenteditable="true"
@@ -46,7 +47,7 @@
               :key="item.fileName"
               class="flex-row flex-row-center mt-1"
             >
-              <svg-icon :icon-class="item.icon" className="mr-1" />
+              <svg-icon :icon-class="item.icon" class-name="mr-1" />
               <span v-if="typeToName(item.type)" class="flex-shrink mr-1">{{ typeToName(item.type) }}</span>
               <span class="ellipse-1">{{ item.type === 'text' ? item.text : item.fileName }}</span>
             </div>
@@ -55,35 +56,62 @@
             v-if="dragFileList.length > 2"
             class="cursor-p"
             style="margin-left: 2px;"
+            @click="checkSendVisible=true"
           >...</span>
         </div>
       </div>
       <template slot="footer">
         <el-button :loading="loadingConfirm" type="primary" @click="handlConfirmEvent">发 送</el-button>
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="fileSendVisible = false">取 消</el-button>
       </template>
     </el-dialog>
     <el-dialog
       :visible.sync="checkSendVisible"
       :modal="false"
-      title="共4个文件"
+      :title="'共' + dragFileList.length + '个文件'"
       class="zool-dialog check-send-dialog color-gray"
       width="500px"
     >
-      <div class="zool-dialog__body color-gray">
-      </div>
+      <el-scrollbar wrap-class="zool-scrollbar_wrap" :wrap-style="[scrollbarStyle]">
+        <div class="zool-dialog__body color-gray">
+          <div
+            v-for="item in dragFileList"
+            :key="item.fileName"
+            class="check-send-item pt-6 pb-6 ml-6 mr-6"
+          >
+            <div class="flex-row flex-row-center flex-space-between">
+              <div class="flex-row flex-row-center">
+                <template v-if="item.type === 'text'">
+                  <span>{{ item.text }}</span>
+                </template>
+                <template v-else-if="item.type === 'image'">
+                  <el-image :src="item.url" class="img-upload-chat mr-2" />
+                  <span>{{ item.fileName }}</span>
+                </template>
+                <template v-else-if="item.type === 'file'">
+                  <span :class="['fa-file-icon', 'mr-2', item.fileType]" />
+                  <span>{{ item.fileName }}</span>
+                </template>
+              </div>
+              <div class="color-gray">{{ item.size }}</div>
+            </div>
+          </div>
+        </div>
+      </el-scrollbar>
     </el-dialog>
   </div>
 </template>
 <script>
+import myMixin from '@/mixins/scrollbar'
 import EmojiWx from '@/components/EmojiWx'
-import { paste, insertHtml } from '@/utils/editorApi'
+import { paste, drop, insertHtml, appendEmptyEle } from '@/utils/editorApi'
 import Selection from '@/utils/selection'
 export default {
   name: 'ChatEditor',
   components: {
     EmojiWx
   },
+  mixins: [myMixin],
   props: {
     placeholder: {
       type: String,
@@ -100,7 +128,7 @@ export default {
       defaultAvatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
       source: 'https://res.wx.qq.com/wxdoc/dist/assets/img/emoji-sprite.b5bd1fe0.png',
       fileSendVisible: false,
-      checkSendVisible: true,
+      checkSendVisible: false,
       dragFileList: [
         {
           type: 'text',
@@ -111,19 +139,28 @@ export default {
           type: 'image',
           icon: 'image',
           fileName: 'icon.png',
+          url: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
           size: '1kb'
         },
         {
           type: 'file',
           icon: 'folder',
           fileName: '123456.xlsx',
+          fileType: 'xlsx',
+          size: '2kb'
+        },
+        {
+          type: 'file',
+          icon: 'folder',
+          fileName: '123456.doc',
+          fileType: 'doc',
           size: '2kb'
         }
       ],
       loadingConfirm: false
     }
   },
-  mounted () {
+  mounted() {
     this.selection = new Selection(this.$refs.editor)
     this.selection.keepLastIndex(this.$refs.editor)
     // this.selection.createRangeByElem(this.$refs.editor, false, true)
@@ -139,6 +176,7 @@ export default {
       })
       this.selection.saveRange()
       this.setEditorStyle()
+      appendEmptyEle(this.$refs.editor)
     },
     handleFolder() {
       this.setEditorStyle(true)
@@ -151,6 +189,7 @@ export default {
       })
       this.selection.saveRange()
       this.setEditorStyle()
+      appendEmptyEle(this.$refs.editor)
     },
     handleAtMerber() {
       this.setEditorStyle(true)
@@ -162,6 +201,7 @@ export default {
       })
       this.selection.saveRange()
       this.setEditorStyle()
+      appendEmptyEle(this.$refs.editor)
     },
     // 处理粘贴事件
     handlePaste(e) {
@@ -183,7 +223,23 @@ export default {
       this.selection.saveRange()
     },
     handDrop(e) {
-      console.log(e.dataTransfer.files.length)
+      drop(e).then(values => {
+        let list = []
+        let hasFolder = false // 是否有文件夹
+        if (Array.isArray(values)) {
+          list = values.filter(item => {
+            !hasFolder && (hasFolder = item.fileType === 'folder')
+            return item.type !== 'error'
+          })
+        }
+        if (hasFolder) {
+          this.$message.error('暂不支持发送文件夹')
+          this.fileSendVisible = false
+          return false
+        }
+        this.dragFileList = list
+        this.fileSendVisible = true
+      })
     },
     setEditorStyle(hasHtml) {
       this.$refs.editor.style.cssText = hasHtml ? '-webkit-user-modify: read-write;user-modify: read-write;' : '-webkit-user-modify: read-write-plaintext-only;user-modify: read-write-plaintext-only;'
@@ -327,15 +383,23 @@ export default {
     }
   }
   .check-send-dialog {
+    .check-send-item {
+      border-bottom: 1px solid $base-border-color;
+      .img-upload-chat {
+        max-width: 100px !important;
+        max-height: 80px !important;
+        vertical-align: top !important;
+      }
+    }
     ::v-deep {
       .el-dialog__title {
         font-size: 14px;
         color: inherit;
       }
-      // .el-dialog__body, .el-dialog__footer {
-      //   border-top: 0px;
-      //   padding-top: 0px;
-      // }
+      .el-dialog__body, .el-dialog__footer {
+        border-top: 0px;
+        padding-top: 0px;
+      }
     }
   }
 }
