@@ -76,6 +76,12 @@ export const asyncRoutes = [
             meta: { title: '菜单权限' }
           }
         ]
+      },
+      {
+        path: 'scrollView',
+        name: 'ScrollView',
+        component: () => import('@/views/vab/scrollView'),
+        meta: { title: '上拉加载' }
       }
     ]
   },
