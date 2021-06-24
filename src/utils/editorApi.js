@@ -461,6 +461,7 @@ export function insertHtml(res) {
   while ((el = elem.firstChild)) {
     pre = frag.appendChild(el)
   }
+  if (!pre) return
   range.insertNode(frag)
 
   const _range = range.cloneRange()

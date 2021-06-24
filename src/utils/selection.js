@@ -16,7 +16,7 @@ export default class Selection {
     if (selection.rangeCount === 0) {
       return
     }
-    console.log(this.editor.lastChild)
+    // console.log(this.editor.lastChild)
     // 表情使用了overflow: hidden，导致光标出现在编辑器外部
     let lastNode = null
     if ((lastNode = this.editor.lastChild) && lastNode.className === 'weui-emoji_item') {

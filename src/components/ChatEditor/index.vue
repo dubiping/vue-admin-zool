@@ -23,9 +23,10 @@
       @blur.stop="handleBlur"
       @input.stop="handleInput"
       @drop.prevent="handDrop"
-      @dragleave.prevent
-      @dragenter.prevent
-      @dragover.prevent
+      @dragleave.self.prevent
+      @dragenter.self.prevent
+      @dragover.self.prevent
+      @mousemove.self.prevent
     />
     <el-dialog
       :visible.sync="fileSendVisible"
@@ -238,7 +239,7 @@ export default {
           return false
         }
         this.dragFileList = list
-        this.fileSendVisible = true
+        this.fileSendVisible = list.length > 0
       })
     },
     setEditorStyle(hasHtml) {
