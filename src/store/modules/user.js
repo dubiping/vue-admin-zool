@@ -25,7 +25,7 @@ const mutations = {
 const actions = {
   async login({ commit }, userInfo) {
     const { data } = await login(userInfo)
-    if (data.token) {
+    if (!data.token) {
       return Vue.prototype.$baseMessage(
         `登录接口异常，未正确返回token...`,
         'error'

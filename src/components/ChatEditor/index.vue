@@ -26,7 +26,6 @@
       @dragleave.self.prevent
       @dragenter.self.prevent
       @dragover.self.prevent
-      @mousemove.self.prevent
     />
     <el-dialog
       :visible.sync="fileSendVisible"
